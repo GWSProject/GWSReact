@@ -1,39 +1,40 @@
-//Include Both Helper File with needed methods
-import { postJwtLogin, } from "../../../helpers/fakebackend_helper";
-
 import { loginSuccess, logoutUserSuccess, apiError, reset_login_flag } from './reducer';
+import api, { loginResource } from 'Services/Services';
+import { jwtDecode } from "jwt-decode";
 
 export const loginUser = (user: any, history: any) => async (dispatch: any) => {
   try {
-    let response;
-
-    response = postJwtLogin({
+    const response = await api.post(`${loginResource}`, {
       email: user.email,
-      password: user.password
+      senha: user.password
     });
 
-    let data = await response;
+    const data = response.data;
 
-    if (data) {
-      sessionStorage.setItem("authUser", JSON.stringify(data));
-      if (process.env.REACT_APP_DEFAULTAUTH === "fake") {
-        var finallogin: any = JSON.stringify(data);
-        finallogin = JSON.parse(finallogin)
-        data = finallogin.data;
-        if (finallogin.status === "success") {
-          dispatch(loginSuccess(data));
-          history('/dashboard-demandas')
-        }
-        else {
-          dispatch(apiError(finallogin));
-        }
-      } else {
-        dispatch(loginSuccess(data));
-        history('/dashboard-demandas')
+    if (data && data.token) {
+      const decodedToken = jwtDecode(data.token);
+
+      const userData = {
+        user: decodedToken,
+        userImage: data.caminhoImagem
+      };
+
+      sessionStorage.setItem("authUser", JSON.stringify(userData));
+
+      if (decodedToken) {
+        dispatch(loginSuccess(decodedToken));
+        history('/dashboard-demandas');
       }
     }
   } catch (error) {
-    dispatch(apiError(error));
+    const errorMessage = "Usuário ou senha inválidos!";
+    console.log(error);
+    
+    dispatch(apiError(errorMessage));
+
+    setTimeout(() => {
+      dispatch(apiError(""));
+    }, 5000);
   }
 };
 

@@ -9,15 +9,6 @@ import { createSelector } from 'reselect';
 
 const ProfileDropdown = () => {
 
-
-    const profiledropdownData = createSelector(
-        (state) => state.Profile.user,
-        (user) => user
-    );
-
-    // Componente
-    const user: any = useSelector(profiledropdownData);
-
     const [userName, setUserName] = useState("");
     const [role, setRole] = useState("");
 
@@ -33,7 +24,7 @@ const ProfileDropdown = () => {
                 setRole(obj.role);
             }
         }
-    }, [userName, role, user]);
+    }, [userName, role,]);
 
     //Menu Dropdown
     const [isProfileDropdown, setIsProfileDropdown] = useState<boolean>(false);

@@ -11,10 +11,10 @@ const DemandsStatus = () => {
     const [chartData, setchartData] = useState<any>([]);
 
     const selectdemandstatusData = createSelector(
-        (state) => state.DashboardProject.projectStatusData,
+        (state) => state.DashboardDemands.projectStatusData,
         (projectStatusData) => projectStatusData
       );
-
+   
     //Componente
     const demandStatusData = useSelector(selectdemandstatusData);
 

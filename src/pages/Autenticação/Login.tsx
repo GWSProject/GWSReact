@@ -22,59 +22,37 @@ import { loginUser, resetLoginFlag } from "../../slices/thunks";
 import logoLogin from "../../assets/images/login-logo.svg";
 
 const Login = (props: any) => {
-    const dispatch = useDispatch<any>();
-    const selectLayoutState = (state: any) => state;
-    const loginpageData = createSelector(
-        selectLayoutState,
-        (state) => ({
-            user: state.Account.user,
-            error: state.Login.error,
-            errorMsg: state.Login.errorMsg,
-        })
-    );
-
-    // Componente
-    const {
-        user, error, errorMsg
-    } = useSelector(loginpageData);
-
+    //UseStates
+    const [passwordShow, setPasswordShow] = useState(false);
+    const [loader, setLoader] = useState(false);
     const [userLogin, setUserLogin] = useState<any>([]);
-    const [passwordShow, setPasswordShow] = useState<boolean>(false);
-    const [loader, setLoader] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (user) {
-            setUserLogin({
-                email: user.email,
-                password: user.password
-            });
-        }
-    }, [user]);
+    const dispatch = useDispatch<any>();
 
+    const error = useSelector((state: any) => state.Login.error);
+
+    //Formik Validation 
     const validation: any = useFormik({
-
         initialValues: {
-            email: '',
-            password: '',
+            email: "paulo@email.com" || '',
+            password: "123456pL" || '',
         },
         validationSchema: Yup.object({
             email: Yup.string().required("Por favor, insira seu e-mail"),
             password: Yup.string().required("Por favor, insira sua senha"),
         }),
-        onSubmit: (values) => {
-            dispatch(loginUser(values, props.router.navigate));
-            setLoader(true)
+        onSubmit: (userCredentials) => {
+
+            setLoader(true);
+
+            dispatch(loginUser(userCredentials, props.router.navigate))
+                .finally(() => {
+                    setTimeout(() => {
+                        setLoader(false);
+                    }, 4000);
+                });
         }
     });
-
-    useEffect(() => {
-        if (errorMsg) {
-            setTimeout(() => {
-                dispatch(resetLoginFlag());
-                setLoader(false)
-            }, 3000);
-        }
-    }, [dispatch, errorMsg]);
 
     document.title = "Login | GWS";
     return (

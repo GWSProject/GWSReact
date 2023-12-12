@@ -12,9 +12,10 @@ const DemandsOverview = () => {
     const [chartData, setchartData] = useState<any>([]);
 
     const selectdemandData = createSelector(
-        (state) => state.DashboardProject.projectData,
+        (state) => state.DashboardDemands.projectData,  // Updated path
         (projectData) => projectData
     );
+
 
     //Componente
     const demandData = useSelector(selectdemandData);
